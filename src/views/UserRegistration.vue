@@ -5,23 +5,23 @@
     <br />
     <table align="center">
       <tbody>
-        <tr>
+       <tr>
           <th>ユーザ名</th>
-          <td><input type="text" v-model="userName" /></td>
+          <td><input type="text" v-model="userName" placeholder="userName"/></td>
         </tr>
         <tr>
           <th>メールアドレス</th>
-          <td><input type="text" v-model="mailAddress" /></td>
+          <td><input type="text" v-model="mailAddress" placeholder="E-mail"/></td>
         </tr>
         <tr>
           <th>パスワード</th>
-          <td><input type="text" v-model="password" /></td>
+          <td><input type="text" v-model="password" placeholder="Password"/></td>
         </tr>
       </tbody>
     </table>
     <br />
-    <button @click="Registration">新規登録</button><br />
-    <router-link to>ログインこちらから</router-link>
+    <button @click="doRegistration">新規登録</button><br />
+    <router-link to="/">ログインはこちらから</router-link>
   </div>
 </template>
 
@@ -37,13 +37,13 @@ export default {
     };
   },
   methods: {
-    Registration(){
+    doRegistration(){
       firebase.auth().createUserWithEmailAndPassword(this.mailAddress, this.password)      
         .then(() => {
           let getUser = firebase.auth().currentUser;          getUser.updateProfile({
             displayName: this.userName,
           }) 
-          userData.collection("users").add({ 
+          userData.collection('users').add({ 
             name: this.userName,
             Email: this.mailAddress,
             Password: this.password,
