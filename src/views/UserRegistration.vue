@@ -36,6 +36,7 @@
 
 <script>
 import firebase from 'firebase'
+import store from '../store'
 import userData from '../firebaseConfig'
 export default {
   data() {
@@ -45,14 +46,15 @@ export default {
       password: '',
     }
   },
+  // this.$store.dispatch('updateMessage', e.target.value);
   methods: {
     doRegistration() {
       firebase
         .auth()
         .createUserWithEmailAndPassword(this.mailAddress, this.password)
         .then(() => {
-          let getUser = firebase.auth().currentUser
-          getUser.updateProfile({
+          store.dispatch('getUserAction', firebase.auth().currentUser)
+          store.getNewUser.updateProfile({
             displayName: this.userName,
           })
           userData
@@ -63,17 +65,10 @@ export default {
               Password: this.password,
             })
             .then(() => {
-              alert('ユーザー情報の登録ができました。')
               this.userName = ''
               this.mailAddress = ''
               this.password = ''
             })
-            .catch((error) => {
-              alert(error + '\nユーザー情報の登録に失敗しました。')
-            })
-        })
-        .catch((error) => {
-          alert(error + '\n正しい情報を入力してください')
         })
     },
   },
