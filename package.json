@@ -1,5 +1,9 @@
 {
+<<<<<<< HEAD
   "name": "mis2",
+=======
+  "name": "develop-mission4",
+>>>>>>> origin/develop
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -23,6 +27,7 @@
     "eslint": "^6.7.2",
     "eslint-plugin-vue": "^6.2.2",
     "vue-template-compiler": "^2.6.11"
+<<<<<<< HEAD
   },
   "eslintConfig": {
     "root": true,
@@ -45,4 +50,7 @@
   ]
 
 
+=======
+  }
+>>>>>>> origin/develop
 }

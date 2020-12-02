@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 # mis2
+=======
+# develop-mission4
+>>>>>>> origin/develop
 
 ## Project setup
 ```
