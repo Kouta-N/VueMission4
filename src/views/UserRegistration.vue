@@ -35,41 +35,43 @@
 </template>
 
 <script>
-import firebase from 'firebase'
+//import firebase from 'firebase'
+//import db from '../firebaseConfig'
 import store from '../store'
-import userData from '../firebaseConfig'
 export default {
   data() {
     return {
       userName: '',
       mailAddress: '',
       password: '',
+      firstMoney: 1000,
     }
   },
-  // this.$store.dispatch('updateMessage', e.target.value);
   methods: {
     doRegistration() {
-      firebase
-        .auth()
-        .createUserWithEmailAndPassword(this.mailAddress, this.password)
-        .then(() => {
-          store.dispatch('getUserAction', firebase.auth().currentUser)
-          store.getNewUser.updateProfile({
-            displayName: this.userName,
-          })
-          userData
-            .collection('users')
-            .add({
-              name: this.userName,
-              Email: this.mailAddress,
-              Password: this.password,
-            })
-            .then(() => {
-              this.userName = ''
-              this.mailAddress = ''
-              this.password = ''
-            })
-        })
+      store.dispatch('userJoinAction', this.mailAddress, this.password)
+      // firebase
+      //   .auth()
+      //   .createUserWithEmailAndPassword(this.mailAddress, this.password)
+      //   .then(() => {
+      //     let userStorage = firebase.auth().currentUser
+      //     userStorage.updateProfile({
+      //       displayName: this.userName,
+      //     })
+      // db.collection('users')
+      //   .add({
+      //     Name: this.userName,
+      //     Email: this.mailAddress,
+      //     Password: this.password,
+      //     Money: this.firstMoney,
+      //   })
+      //   .then(() => {
+      //     this.userName = ''
+      //     this.mailAddress = ''
+      //     this.password = ''
+      //     this.money = ''
+      //   })
+      //})
     },
   },
 }

@@ -1,16 +1,25 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
-import UserRegistration from '../views/UserRegistration.vue';
+import Login from '../views/Login.vue';
 
 Vue.use(VueRouter);
 
-<<<<<<< HEAD
 const routes = [
   {
     path: '/',
-    name: 'UserRegistration',
-    component: UserRegistration,
+    name: 'Login',
+    component: Login
   },
+  {
+    path: '/UserRegistration',
+    name: 'UserRegistration',
+    component: () => import(/* webpackChunkName: "about" */ '../views/UserRegistration.vue')
+  },
+  {
+    path: '/myDashboard',
+    name: 'myDashboard',
+    component: () => import(/* webpackChunkName: "about" */ '../views/myDashboard.vue')
+  },    
 ];
 
 const router = new VueRouter({
@@ -20,18 +29,3 @@ const router = new VueRouter({
 });
 
 export default router;
-=======
-const routes = [{
-    path: '/',
-    name: 'UserRegistration',
-    component: UserRegistration,
-}, ];
-
-const router = new VueRouter({
-    mode: 'history',
-    base: process.env.BASE_URL,
-    routes,
-});
-
-export default router;
->>>>>>> origin/develop
