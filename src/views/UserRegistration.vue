@@ -36,8 +36,8 @@
 
 <script>
 //import firebase from 'firebase'
-//import db from '../firebaseConfig'
-import store from '../store'
+//import db from '../main.js'
+//import store from '../store'
 export default {
   data() {
     return {
@@ -49,7 +49,11 @@ export default {
   },
   methods: {
     doRegistration() {
-      store.dispatch('userJoinAction', this.mailAddress, this.password)
+      this.$store.dispatch('userJoinMutation', {
+        email: this.mailAddress,
+        password: this.password,
+        name: this.userName,
+      })
       // firebase
       //   .auth()
       //   .createUserWithEmailAndPassword(this.mailAddress, this.password)
@@ -58,20 +62,20 @@ export default {
       //     userStorage.updateProfile({
       //       displayName: this.userName,
       //     })
-      // db.collection('users')
-      //   .add({
-      //     Name: this.userName,
-      //     Email: this.mailAddress,
-      //     Password: this.password,
-      //     Money: this.firstMoney,
+      //     db.collection('users')
+      //       .add({
+      //         Name: this.userName,
+      //         Email: this.mailAddress,
+      //         Password: this.password,
+      //         Money: this.firstMoney,
+      //       })
+      //       .then(() => {
+      //         this.userName = ''
+      //         this.mailAddress = ''
+      //         this.password = ''
+      //         this.money = ''
+      //       })
       //   })
-      //   .then(() => {
-      //     this.userName = ''
-      //     this.mailAddress = ''
-      //     this.password = ''
-      //     this.money = ''
-      //   })
-      //})
     },
   },
 }
