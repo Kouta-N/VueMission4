@@ -29,8 +29,6 @@
 </template>
 
 <script>
-import firebase from 'firebase'
-import store from '../store'
 export default {
   data() {
     return {
@@ -40,16 +38,11 @@ export default {
   },
   methods: {
     doLogin() {
-      firebase
-        .auth()
-        .signInWithEmailAndPassword(this.mailAddress, this.password)
-        .then(() => {
-          store.dispatch(
-            'loginUserNameMutation',
-            firebase.auth().currentUser.displayName,
-          )
-          this.$router.push('/myDashboard') //router link のvue版
-        })
+      this.$store.dispatch('userLoginAction', {
+        email: this.mailAddress,
+        password: this.password,
+      })
+      this.$router.push('/myDashboard')
     },
   },
 }

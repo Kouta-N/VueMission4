@@ -35,47 +35,25 @@
 </template>
 
 <script>
-//import firebase from 'firebase'
-//import db from '../main.js'
-//import store from '../store'
 export default {
   data() {
     return {
       userName: '',
       mailAddress: '',
       password: '',
-      firstMoney: 1000,
     }
   },
   methods: {
     doRegistration() {
-      this.$store.dispatch('userJoinMutation', {
+      this.$store.dispatch('userJoinAction', {
         email: this.mailAddress,
         password: this.password,
         name: this.userName,
       })
-      // firebase
-      //   .auth()
-      //   .createUserWithEmailAndPassword(this.mailAddress, this.password)
-      //   .then(() => {
-      //     let userStorage = firebase.auth().currentUser
-      //     userStorage.updateProfile({
-      //       displayName: this.userName,
-      //     })
-      //     db.collection('users')
-      //       .add({
-      //         Name: this.userName,
-      //         Email: this.mailAddress,
-      //         Password: this.password,
-      //         Money: this.firstMoney,
-      //       })
-      //       .then(() => {
-      //         this.userName = ''
-      //         this.mailAddress = ''
-      //         this.password = ''
-      //         this.money = ''
-      //       })
-      //   })
+      this.userName = ''
+      this.mailAddress = ''
+      this.password = ''
+      this.money = ''
     },
   },
 }
