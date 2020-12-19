@@ -4,9 +4,9 @@
     <br />
     <br />
     <br />
-    <span>{{ this.$store.state.loginUserName }}さん、ようこそ！！</span>
+    <span>{{ loginUserName }}さん、ようこそ！！</span>
     <span class="output-money">
-      残高：{{ this.$store.state.loginUserMoney }}
+      残高：{{ loginUserMoney }}
       <button v-on:click="doLogout">ログアウト</button>
     </span>
     <h2>ユーザ一覧</h2>
@@ -28,9 +28,9 @@
               ></div>
             </transition>
             <div class="wallet-modal" v-if="showWalletModal">
-              {{ showWalletUserName }}さんの残高
+              {{ showWalletName }}さんの残高
               <br />
-              {{ showWalletUserMoney }}
+              {{ showWalletMoney }}
               <br />
               <button class="button" @click="showWalletModal = false">
                 close
@@ -38,7 +38,7 @@
             </div>
           </td>
           <td>
-            <button v-on:click="savePayReciver(user.Name)">
+            <button v-on:click="saveReciver(user.Name)">
               送る
             </button>
             <transition name="fade" appear v-if="showTransferModal">
@@ -49,7 +49,7 @@
               ></div>
             </transition>
             <div class="wallet-modal" v-if="showTransferModal">
-              あなたの残高{{ outputMoney }}
+              あなたの残高{{ loginUserMoney }}
               <br />
               送る金額
               <br />
@@ -72,9 +72,8 @@ export default {
   data() {
     return {
       allUsers: [],
-      showWalletUserName: '',
-      showWalletUserMoney: '',
-      outputMoney: '',
+      showWalletName: '',
+      showWalletMoney: '',
       payReciver: '',
       pay: '',
       showWalletModal: false,
@@ -82,50 +81,60 @@ export default {
     }
   },
   created: function () {
-    this.outputMoney = this.$store.state.loginUserMoney //モーダル表示用に残額を保存
-    setTimeout(() => {
-      //this.$store.state.loginUserNameをこのページで獲得する前に実行するとログイン中のユーザーをpushしてしまうので、Timeoutを設ける
-      db.collection('users')
-        .get()
-        .then((querySnapshot) => {
-          querySnapshot.docs.forEach((doc, index) => {
-            if (
-              querySnapshot.docs[index].data().Name !==
-              this.$store.state.loginUserName
-            ) {
-              this.allUsers.push(doc.data(index))
-            }
-          })
+    db.collection('users')
+      .get()
+      .then((querySnapshot) => {
+        querySnapshot.docs.forEach((doc, index) => {
+          if (querySnapshot.docs[index].data().Name !== this.loginUserName) {
+            this.allUsers.push(doc.data(index))
+          }
         })
-    }, 2000)
+      })
+      .catch((error) => {
+        alert(error)
+      })
+  },
+  computed: {
+    loginUserName: {
+      get() {
+        return this.$store.getters.loginUserName
+      },
+    },
+    loginUserMoney: {
+      get() {
+        return this.$store.getters.loginUserMoney
+      },
+    },
   },
   methods: {
     doLogout() {
       this.allUsers = ''
-      this.$store.dispatch('userLogoutAction')
+      this.$store.dispatch('logout')
       this.$router.push('/')
     },
     showWallet(name) {
-      this.showWalletUserName = name
+      this.showWalletName = name
       this.showWalletModal = true
       db.collection('users')
         .get()
         .then((querySnapshot) => {
           querySnapshot.docs.forEach((doc, index) => {
             if (querySnapshot.docs[index].data().Name === name) {
-              this.showWalletUserMoney = querySnapshot.docs[index].data().Money
+              this.showWalletMoney = querySnapshot.docs[index].data().Money
             }
           })
         })
+        .catch((error) => {
+          alert(error)
+        })
     },
-    savePayReciver(setName) {
+    saveReciver(setName) {
       this.payReciver = setName
-      this.outoutMoney = this.$store.state.loginUserMoney
       this.showTransferModal = true
     },
     transferMoney(payReciver, pay) {
       this.showTransferModal = false
-      this.$store.dispatch('transferMoneyAction', {
+      this.$store.dispatch('transferMoney', {
         name: payReciver,
         money: Number(pay), //キャストしない場合はstring型となる
       })

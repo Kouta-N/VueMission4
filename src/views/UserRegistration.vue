@@ -45,7 +45,7 @@ export default {
   },
   methods: {
     doRegistration() {
-      this.$store.dispatch('userJoinAction', {
+      this.$store.dispatch('setUser', {
         email: this.mailAddress,
         password: this.password,
         name: this.userName,

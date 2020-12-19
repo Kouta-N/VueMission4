@@ -38,7 +38,7 @@ export default {
   },
   methods: {
     doLogin() {
-      this.$store.dispatch('userLoginAction', {
+      this.$store.dispatch('login', {
         email: this.mailAddress,
         password: this.password,
       })

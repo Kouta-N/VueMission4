@@ -14,63 +14,60 @@ export default new Vuex.Store({
     targetUserMoney: '',
     firstMoney: 1000, //新規ユーザーの最初の所持金額
   },
+  getters: {
+    loginUserName: (state) => state.loginUserName,
+    loginUserMoney: (state) => state.loginUserMoney,
+  },
   actions: {
-    userJoinAction({ commit }, { email, password, name }) {
-      const userJoinInformation = {
-        mailInformation: email,
-        passwordInformation: password,
-        nameInformation: name,
-      }
-      commit('userJoinAction', userJoinInformation)
+    async setUser({ commit }, { email, password, name }) {
+      const userInformation = { email, password, name }
+      await commit('setUser', userInformation)
     },
-    userLoginAction({ commit }, { email, password }) {
-      const loginInformation = {
-        loginMailInformation: email,
-        loginPasswordInformation: password,
-      }
-      commit('userLoginAction', loginInformation)
+    login({ commit }, { email, password }) {
+      const loginInformation = { email, password }
+      commit('login', loginInformation)
     },
-    userLogoutAction(state) {
+    logout(state) {
       state.loginUserName = ''
       state.userStorage = ''
       state.loginUserMoney = ''
       firebase.auth().signOut()
     },
-    transferMoneyAction({ commit }, { name, money }) {
-      const transferInformation = {
-        transferNameInformation: name,
-        trasferMoneyInformation: money,
-      }
-      commit('transferMoneyAction', transferInformation)
+    async transferMoney({ commit }, { name, money }) {
+      const transferInformation = { name, money }
+      await commit('transferMoney', transferInformation)
     },
   },
   mutations: {
-    async userJoinAction(state, userJoinInformation) {
-      await firebase
+    setUser(state, userInformation) {
+      firebase
         .auth()
         .createUserWithEmailAndPassword(
-          userJoinInformation.mailInformation,
-          userJoinInformation.passwordInformation,
+          userInformation.email,
+          userInformation.password,
         )
         .then(() => {
           state.userStorage = firebase.auth().currentUser
           state.userStorage.updateProfile({
-            displayName: userJoinInformation.nameInformation,
+            displayName: userInformation.name,
           })
           db.collection('users').add({
-            Name: userJoinInformation.nameInformation,
-            Email: userJoinInformation.mailInformation,
-            Password: userJoinInformation.passwordInformation,
+            Name: userInformation.name,
+            Email: userInformation.email,
+            Password: userInformation.password,
             Money: state.firstMoney,
           })
         })
+        .catch((error) => {
+          alert(error)
+        })
     },
-    userLoginAction(state, loginInformation) {
+    login(state, loginInformation) {
       firebase
         .auth()
         .signInWithEmailAndPassword(
-          loginInformation.loginMailInformation,
-          loginInformation.loginPasswordInformation,
+          loginInformation.email,
+          loginInformation.password,
         )
         .then(() => {
           state.loginUserName = firebase.auth().currentUser.displayName
@@ -86,16 +83,18 @@ export default new Vuex.Store({
               })
             })
         })
+        .catch((error) => {
+          alert(error)
+        })
     },
-    async transferMoneyAction(state, transferInformation) {
+    transferMoney(state, transferInformation) {
       //送金する相手のデータを取得
-      await db.collection('users')
+      db.collection('users')
         .get()
         .then((querySnapshot) => {
           querySnapshot.docs.forEach((doc, index) => {
             if (
-              querySnapshot.docs[index].data().Name ===
-              transferInformation.transferNameInformation
+              querySnapshot.docs[index].data().Name === transferInformation.name
             ) {
               state.targetUserID = querySnapshot.docs[index].id
               state.targetUserMoney = querySnapshot.docs[index].data().Money
@@ -105,15 +104,35 @@ export default new Vuex.Store({
             }
           })
           //送金処理
-          state.loginUserMoney -= transferInformation.trasferMoneyInformation
-          state.targetUserMoney += transferInformation.trasferMoneyInformation
+          state.loginUserMoney -= transferInformation.money
+          state.targetUserMoney += transferInformation.money
           //firestoreの残金データを更新
           const loginUserRef = db.collection('users').doc(state.loginUserID)
           const targetUserRef = db.collection('users').doc(state.targetUserID)
-          loginUserRef.update({
-            Money: state.loginUserMoney,
+          db.runTransaction((loginTr) => {
+            return loginTr
+              .get(loginUserRef)
+              .then(() => {
+                loginTr.update(loginUserRef, {
+                  Money: state.loginUserMoney,
+                })
+              })
+              .catch((error) => {
+                alert(error)
+              })
           })
-          targetUserRef.update({ Money: state.targetUserMoney })
+          db.runTransaction((targetTr) => {
+            return targetTr
+              .get(targetUserRef)
+              .then(() => {
+                targetTr.update(targetUserRef, {
+                  Money: state.targetUserMoney,
+                })
+              })
+              .catch((error) => {
+                alert(error)
+              })
+          })
         })
     },
   },
