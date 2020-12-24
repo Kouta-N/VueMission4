@@ -78,14 +78,17 @@ export default {
       pay: '',
       showWalletModal: false,
       showTransferModal: false,
+      filterName: '',
     }
   },
-  created: function () {
-    db.collection('users')
+  created: async function () {
+    await db
+      .collection('users')
       .get()
       .then((querySnapshot) => {
         querySnapshot.docs.forEach((doc, index) => {
-          if (querySnapshot.docs[index].data().Name !== this.loginUserName) {
+          if (querySnapshot.docs[index].data().Name !== this.filterName) {
+            console.log(this.filterName)
             this.allUsers.push(doc.data(index))
           }
         })

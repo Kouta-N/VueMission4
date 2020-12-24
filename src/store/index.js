@@ -88,7 +88,7 @@ export default new Vuex.Store({
         })
     },
     transferMoney(state, transferInformation) {
-      //送金する相手のデータを取得
+      // 送金する相手のデータを取得
       db.collection('users')
         .get()
         .then((querySnapshot) => {
@@ -104,28 +104,18 @@ export default new Vuex.Store({
             }
           })
           //送金処理
-          state.loginUserMoney -= transferInformation.money
-          state.targetUserMoney += transferInformation.money
-          //firestoreの残金データを更新
-          const loginUserRef = db.collection('users').doc(state.loginUserID)
-          const targetUserRef = db.collection('users').doc(state.targetUserID)
-          db.runTransaction((loginTr) => {
-            return loginTr
+          db.runTransaction((tr) => {
+            state.loginUserMoney -= transferInformation.money
+            state.targetUserMoney += transferInformation.money
+            const loginUserRef = db.collection('users').doc(state.loginUserID)
+            const targetUserRef = db.collection('users').doc(state.targetUserID)
+            return tr
               .get(loginUserRef)
               .then(() => {
-                loginTr.update(loginUserRef, {
+                tr.update(loginUserRef, {
                   Money: state.loginUserMoney,
                 })
-              })
-              .catch((error) => {
-                alert(error)
-              })
-          })
-          db.runTransaction((targetTr) => {
-            return targetTr
-              .get(targetUserRef)
-              .then(() => {
-                targetTr.update(targetUserRef, {
+                tr.update(targetUserRef, {
                   Money: state.targetUserMoney,
                 })
               })
