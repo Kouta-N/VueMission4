@@ -103,18 +103,20 @@ export default new Vuex.Store({
               state.loginUserID = querySnapshot.docs[index].id
             }
           })
+          state.loginUserMoney -= transferInformation.money
+          state.targetUserMoney += transferInformation.money
+          const loginUserRef = db.collection('users').doc(state.loginUserID)
+          const targetUserRef = db.collection('users').doc(state.targetUserID)
           //送金処理
           db.runTransaction((tr) => {
-            state.loginUserMoney -= transferInformation.money
-            state.targetUserMoney += transferInformation.money
-            const loginUserRef = db.collection('users').doc(state.loginUserID)
-            const targetUserRef = db.collection('users').doc(state.targetUserID)
             return tr
               .get(loginUserRef)
               .then(() => {
                 tr.update(loginUserRef, {
                   Money: state.loginUserMoney,
                 })
+              })
+              .then(() => {
                 tr.update(targetUserRef, {
                   Money: state.targetUserMoney,
                 })
