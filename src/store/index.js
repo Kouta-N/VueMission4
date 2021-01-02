@@ -113,8 +113,16 @@ export default new Vuex.Store({
             let updateTarget = await db.runTransaction((t) =>
               t.get(targetUserRef),
             )
-            await updateUser.ref.update({ Money: state.loginUserMoney })
-            await updateTarget.ref.update({ Money: state.targetUserMoney })
+            await updateUser.ref
+              .update({ Money: state.loginUserMoney })
+              .catch((error) => {
+                alert(error)
+              })
+            await updateTarget.ref
+              .update({ Money: state.targetUserMoney })
+              .catch((error) => {
+                alert(error)
+              })
           }
           updateMoney()
         })
