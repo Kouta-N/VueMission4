@@ -169,13 +169,13 @@ export default {
 }
 .wallet-modal {
   position: fixed;
-  top: 90%;
+  top: 80%;
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 99;
   width: 100%;
-  max-width: 150px;
-  height: 100px;
+  max-width: 170px;
+  height: 120px;
   background-color: white;
   border-radius: 4px;
   border-style: solid;

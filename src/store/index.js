@@ -108,23 +108,17 @@ export default new Vuex.Store({
           const loginUserRef = db.collection('users').doc(state.loginUserID)
           const targetUserRef = db.collection('users').doc(state.targetUserID)
           //送金処理
-          async function updateMoney() {
-            let updateUser = await db.runTransaction((t) => t.get(loginUserRef))
-            let updateTarget = await db.runTransaction((t) =>
-              t.get(targetUserRef),
-            )
-            await updateUser.ref
-              .update({ Money: state.loginUserMoney })
-              .catch((error) => {
-                alert(error)
-              })
-            await updateTarget.ref
-              .update({ Money: state.targetUserMoney })
-              .catch((error) => {
-                alert(error)
-              })
-          }
-          updateMoney()
+          db.runTransaction(async function (tr) {
+            await tr.get(loginUserRef)
+            await tr.get(targetUserRef)
+            await tr.update(loginUserRef, { Money: state.loginUserMoney })
+            await makeError()
+            await tr.update(targetUserRef, {
+              Money: state.targetUserMoney,
+            })
+          }).catch(function (error) {
+            console.log('Transaction failed: ', error)
+          })
         })
     },
   },
