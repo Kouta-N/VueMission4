@@ -110,12 +110,16 @@ export default new Vuex.Store({
           //送金処理
           db.runTransaction(async function (tr) {
             await tr.get(loginUserRef)
-            await tr.get(targetUserRef)
-            await tr.update(loginUserRef, { Money: state.loginUserMoney })
-            await makeError()
-            await tr.update(targetUserRef, {
-              Money: state.targetUserMoney,
-            })
+            await tr
+              .get(targetUserRef)
+              .then(() => {
+                tr.update(loginUserRef, { Money: state.loginUserMoney })
+              })
+              .then(() => {
+                tr.update(targetUserRef, {
+                  Money: state.targetUserMoney,
+                })
+              })
           }).catch(function (error) {
             console.log('Transaction failed: ', error)
           })
